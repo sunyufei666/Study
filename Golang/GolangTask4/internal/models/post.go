@@ -8,4 +8,9 @@ type Post struct {
 	Content string `gorm:"not null"`
 	UserID  uint
 	User    User
+	Comment []Comment
+}
+
+func (Post) TableName() string {
+	return "posts"
 }

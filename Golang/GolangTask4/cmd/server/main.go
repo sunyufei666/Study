@@ -32,8 +32,10 @@ func main() {
 	{
 		post := other.Group("/post")
 		{
-			post.POST("addPost", postHandler.AddPost)
 			post.POST("getAllPost", postHandler.GetAllPost)
+			post.POST("addPost", postHandler.AddPost)
+			post.POST("getUserAllPost", postHandler.getUserAllPost)
+			post.POST("getUserPostInfo", postHandler.getUserPostInfo)
 			post.POST("UpdatePost", postHandler.UpdatePost)
 			post.POST("DeletePost", postHandler.DeletePost)
 		}
@@ -41,6 +43,7 @@ func main() {
 		comment := other.Group("/comment")
 		{
 			comment.POST("addComment", commentHandler.AddComment)
+			comment.POST("getAllComment", commentHandler.getPostAllComment)
 			comment.POST("DeleteComment", commentHandler.DeleteComment)
 		}
 	}

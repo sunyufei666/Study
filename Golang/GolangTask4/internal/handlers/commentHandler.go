@@ -56,3 +56,19 @@ func (co *CommentHandler) DeleteComment(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "删除评论成功！"})
 }
+
+func (co *CommentHandler) getPostAllComment(c *gin.Context) {
+	var commentReq *models.Comment
+	var comments *[]models.Comment
+	var err error
+	if err = c.ShouldBindJSON(&commentReq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if comments, err = co.commentService.GetAllCommentByPostID(commentReq.PostID); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, &comments)
+}

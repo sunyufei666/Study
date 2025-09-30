@@ -10,3 +10,7 @@ type Comment struct {
 	PostID  uint
 	Post    Post
 }
+
+func (Comment) TableName() string {
+	return "comments"
+}

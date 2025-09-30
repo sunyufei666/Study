@@ -16,6 +16,10 @@ func NewCommentService() *CommentService {
 	}
 }
 
+func (co *CommentService) GetAllCommentByPostID(postID uint) (*[]models.Comment, error) {
+	return co.commentRepository.GetAllCommentByPostID(postID)
+}
+
 func (co *CommentService) AddComment(comment *models.Comment) error {
 	return co.commentRepository.AddComment(comment)
 }

@@ -24,6 +24,14 @@ func (p *PostService) GetAllPost() (*[]models.Post, error) {
 	return p.postRepository.GetAllPost()
 }
 
+func (p *PostService) GetUserAllPost(userID uint) (*[]models.Post, error) {
+	return p.postRepository.GetAllPostByUserID(userID)
+}
+
+func (p *PostService) GetUserPostInfo(id uint) (*models.Post, error) {
+	return p.postRepository.FindByID(id)
+}
+
 func (p *PostService) UpdatePost(post *models.Post) (*models.Post, error) {
 	prePost, err := p.postRepository.FindByID(post.ID)
 	if err != nil {

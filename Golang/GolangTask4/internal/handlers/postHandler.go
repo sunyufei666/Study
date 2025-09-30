@@ -90,3 +90,39 @@ func (p *PostHandler) DeletePost(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "删除文章成功！"})
 }
+
+// getUserAllPost 获取某用户所有的文章
+func (p *PostHandler) getUserAllPost(c *gin.Context) {
+	var postReq *models.Post
+	var posts *[]models.Post
+	var err error
+
+	if err = c.ShouldBindJSON(&postReq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if posts, err = p.postService.GetUserAllPost(postReq.UserID); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, &posts)
+}
+
+// getUserPostInfo 获取某篇文章的信息
+func (p *PostHandler) getUserPostInfo(c *gin.Context) {
+	var postReq *models.Post
+	var post *models.Post
+	var err error
+
+	if err = c.ShouldBindJSON(&postReq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if post, err = p.postService.GetUserPostInfo(postReq.ID); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, &post)
+}
