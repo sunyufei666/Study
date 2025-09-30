@@ -26,6 +26,7 @@ func main() {
 
 	// 其他（需要权限验证）
 	postHandler := handlers.NewPostHandler()
+	commentHandler := handlers.NewCommentHandler()
 	other := r.Group("/api")
 	other.Use(middleware.LoginAuthMiddleware(services.NewLoginService()))
 	{
@@ -37,10 +38,11 @@ func main() {
 			post.POST("DeletePost", postHandler.DeletePost)
 		}
 
-		//comment := other.Group("/comment")
-		//{
-		//	post.POST("addPost", postHandler.AddPost)
-		//}
+		comment := other.Group("/comment")
+		{
+			comment.POST("addComment", commentHandler.AddComment)
+			comment.POST("DeleteComment", commentHandler.DeleteComment)
+		}
 	}
 
 	err := r.Run(":8080")

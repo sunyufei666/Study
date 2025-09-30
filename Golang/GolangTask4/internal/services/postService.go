@@ -17,29 +17,21 @@ func NewPostService() *PostService {
 }
 
 func (p *PostService) AddPost(post *models.Post) error {
-	err := p.postRepository.AddPost(post)
-	if err != nil {
-		return err
-	}
-	return nil
+	return p.postRepository.AddPost(post)
 }
 
 func (p *PostService) GetAllPost() (*[]models.Post, error) {
-	posts, err := p.postRepository.GetAllPost()
-	if err != nil {
-		return nil, err
-	}
-	return posts, nil
+	return p.postRepository.GetAllPost()
 }
 
 func (p *PostService) UpdatePost(post *models.Post) (*models.Post, error) {
 	prePost, err := p.postRepository.FindByID(post.ID)
 	if err != nil {
-		return nil, errors.New("post not found")
+		return nil, errors.New("notfound")
 	}
 
 	if post.UserID != prePost.UserID {
-		return nil, errors.New("unauthorized to update this post")
+		return nil, errors.New("unauthorized")
 	}
 
 	if err := p.postRepository.Update(post); err != nil {
@@ -52,11 +44,11 @@ func (p *PostService) UpdatePost(post *models.Post) (*models.Post, error) {
 func (p *PostService) DeletePost(post *models.Post) error {
 	post1, err := p.postRepository.FindByID(post.ID)
 	if err != nil {
-		return errors.New("post not found")
+		return errors.New("notfound")
 	}
 
 	if post.UserID != post1.UserID {
-		return errors.New("unauthorized to delete this post")
+		return errors.New("unauthorized")
 	}
 
 	return p.postRepository.Delete(post.ID)

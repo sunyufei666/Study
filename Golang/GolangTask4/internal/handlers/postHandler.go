@@ -57,9 +57,9 @@ func (p *PostHandler) UpdatePost(c *gin.Context) {
 	post, err = p.postService.UpdatePost(post)
 	if err != nil {
 		status := http.StatusInternalServerError
-		if err.Error() == "post not found" {
+		if err.Error() == "notfound" {
 			status = http.StatusNotFound
-		} else if err.Error() == "unauthorized to update this post" {
+		} else if err.Error() == "unauthorized" {
 			status = http.StatusForbidden
 		}
 		c.JSON(status, gin.H{"error": err.Error()})
@@ -79,14 +79,14 @@ func (p *PostHandler) DeletePost(c *gin.Context) {
 	}
 	if err = p.postService.DeletePost(post); err != nil {
 		status := http.StatusInternalServerError
-		if err.Error() == "post not found" {
+		if err.Error() == "notfound" {
 			status = http.StatusNotFound
-		} else if err.Error() == "unauthorized to delete this post" {
+		} else if err.Error() == "unauthorized" {
 			status = http.StatusForbidden
 		}
 		c.JSON(status, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "删除成功！"})
+	c.JSON(http.StatusOK, gin.H{"message": "删除文章成功！"})
 }
