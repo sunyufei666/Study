@@ -30,7 +30,7 @@ func (l *LoginHandler) Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "用户注册成功！"})
 }
 
 func (l *LoginHandler) Login(c *gin.Context) {
