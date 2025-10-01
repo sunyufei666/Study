@@ -16,7 +16,8 @@ func NewPostService() *PostService {
 	}
 }
 
-func (p *PostService) AddPost(post *models.Post) error {
+func (p *PostService) AddPost(post *models.Post, userID any) error {
+	post.UserID = userID.(uint)
 	return p.postRepository.AddPost(post)
 }
 
@@ -24,7 +25,8 @@ func (p *PostService) GetAllPost() (*[]models.Post, error) {
 	return p.postRepository.GetAllPost()
 }
 
-func (p *PostService) GetUserAllPost(userID uint) (*[]models.Post, error) {
+func (p *PostService) GetUserAllPost(userIDParam any) (*[]models.Post, error) {
+	userID := userIDParam.(uint)
 	return p.postRepository.GetAllPostByUserID(userID)
 }
 
@@ -32,30 +34,33 @@ func (p *PostService) GetUserPostInfo(id uint) (*models.Post, error) {
 	return p.postRepository.FindByID(id)
 }
 
-func (p *PostService) UpdatePost(post *models.Post) (*models.Post, error) {
-	prePost, err := p.postRepository.FindByID(post.ID)
+func (p *PostService) UpdatePost(postReq *models.Post, id uint, userIDParam any) (*models.Post, error) {
+	prePost, err := p.postRepository.FindByID(id)
 	if err != nil {
 		return nil, errors.New("notfound")
 	}
 
-	if post.UserID != prePost.UserID {
+	if userIDParam.(uint) != prePost.UserID {
 		return nil, errors.New("unauthorized")
 	}
 
-	if err := p.postRepository.Update(post); err != nil {
+	prePost.Title = postReq.Title
+	prePost.Content = postReq.Content
+
+	if err := p.postRepository.Update(prePost); err != nil {
 		return nil, err
 	}
 
-	return p.postRepository.FindByID(post.ID)
+	return p.postRepository.FindByID(prePost.ID)
 }
 
-func (p *PostService) DeletePost(post *models.Post) error {
-	post1, err := p.postRepository.FindByID(post.ID)
+func (p *PostService) DeletePost(id uint, userIDParam any) error {
+	post, err := p.postRepository.FindByID(id)
 	if err != nil {
 		return errors.New("notfound")
 	}
 
-	if post.UserID != post1.UserID {
+	if post.UserID != userIDParam {
 		return errors.New("unauthorized")
 	}
 

@@ -12,15 +12,15 @@ func (co *CommentRepository) AddComment(comment *models.Comment) error {
 }
 
 func (co *CommentRepository) GetAllCommentByPostID(postID uint) (*[]models.Comment, error) {
-	var comments *[]models.Comment
-	err := database.DB.Debug().Where("post_id = ?", postID).Find(comments).Error
-	return comments, err
+	var comments []models.Comment
+	err := database.DB.Debug().Where("post_id = ?", postID).Find(&comments).Error
+	return &comments, err
 }
 
 func (co *CommentRepository) FindCommentById(id uint) (*models.Comment, error) {
-	var comment *models.Comment
-	err := database.DB.Debug().Preload("User").Where("id = ?", id).First(comment).Error
-	return comment, err
+	var comment models.Comment
+	err := database.DB.Debug().First(&comment, id).Error
+	return &comment, err
 }
 
 func (co *CommentRepository) DeleteComment(id uint) error {

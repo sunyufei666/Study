@@ -34,17 +34,17 @@ func main() {
 		{
 			post.POST("getAllPost", postHandler.GetAllPost)
 			post.POST("addPost", postHandler.AddPost)
-			post.POST("getUserAllPost", postHandler.getUserAllPost)
-			post.POST("getUserPostInfo", postHandler.getUserPostInfo)
-			post.POST("UpdatePost", postHandler.UpdatePost)
-			post.POST("DeletePost", postHandler.DeletePost)
+			post.POST("getUserAllPost", postHandler.GetUserAllPost)
+			post.POST("getUserPostInfo/:id", postHandler.GetUserPostInfo)
+			post.POST("updatePost/:id", postHandler.UpdatePost)
+			post.POST("deletePost/:id", postHandler.DeletePost)
 		}
 
 		comment := other.Group("/comment")
 		{
-			comment.POST("addComment", commentHandler.AddComment)
-			comment.POST("getAllComment", commentHandler.getPostAllComment)
-			comment.POST("DeleteComment", commentHandler.DeleteComment)
+			comment.POST(":postID/addComment", commentHandler.AddComment)
+			comment.POST(":postID/getAllComment", commentHandler.GetPostAllComment)
+			comment.POST("deleteComment/:id", commentHandler.DeleteComment)
 		}
 	}
 

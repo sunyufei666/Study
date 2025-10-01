@@ -20,17 +20,20 @@ func (co *CommentService) GetAllCommentByPostID(postID uint) (*[]models.Comment,
 	return co.commentRepository.GetAllCommentByPostID(postID)
 }
 
-func (co *CommentService) AddComment(comment *models.Comment) error {
+func (co *CommentService) AddComment(comment *models.Comment, postID uint, userIDParam any) error {
+	comment.PostID = postID
+	comment.UserID = userIDParam.(uint)
 	return co.commentRepository.AddComment(comment)
 }
 
-func (co *CommentService) DeleteComment(comment *models.Comment) error {
-	comment1, err := co.commentRepository.FindCommentById(comment.ID)
+func (co *CommentService) DeleteComment(id uint, userIDParam any) error {
+	comment, err := co.commentRepository.FindCommentById(id)
+	userID := userIDParam.(uint)
 	if err != nil {
 		return errors.New("notfound")
 	}
 
-	if comment1.UserID != comment.UserID {
+	if userID != comment.UserID {
 		return errors.New("unauthorized")
 	}
 

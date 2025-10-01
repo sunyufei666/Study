@@ -10,7 +10,7 @@ type PostRepository struct {
 
 func (p *PostRepository) FindByID(id uint) (*models.Post, error) {
 	var post models.Post
-	err := database.DB.Debug().Preload("User").Where("id = ?", id).First(&post).Error
+	err := database.DB.Debug().First(&post, id).Error
 	return &post, err
 }
 
@@ -21,13 +21,13 @@ func (p *PostRepository) GetAllPost() (*[]models.Post, error) {
 }
 
 func (p *PostRepository) GetAllPostByUserID(userID uint) (*[]models.Post, error) {
-	var posts *[]models.Post
-	err := database.DB.Debug().Preload("Comment").Where("user_id = ?", userID).Find(posts).Error
-	return posts, err
+	var posts []models.Post
+	err := database.DB.Debug().Preload("Comment").Where("user_id = ?", userID).Find(&posts).Error
+	return &posts, err
 }
 
 func (p *PostRepository) AddPost(post *models.Post) error {
-	return database.DB.Debug().Create(&post).Error
+	return database.DB.Debug().Create(post).Error
 }
 
 func (p *PostRepository) Update(post *models.Post) error {
@@ -35,5 +35,5 @@ func (p *PostRepository) Update(post *models.Post) error {
 }
 
 func (p *PostRepository) Delete(id uint) error {
-	return database.DB.Debug().Delete(&models.Post{}, id).Error
+	return database.DB.Debug().Where("ID = ?", id).Delete(&models.Post{}).Error
 }

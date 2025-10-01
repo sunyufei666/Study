@@ -4,6 +4,7 @@ import (
 	"GolangTask4/internal/models"
 	"GolangTask4/internal/services"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,7 +28,8 @@ func (p *PostHandler) AddPost(c *gin.Context) {
 		return
 	}
 
-	err = p.postService.AddPost(&post)
+	userID, _ := c.Get("userID")
+	err = p.postService.AddPost(&post, userID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -47,14 +49,17 @@ func (p *PostHandler) GetAllPost(c *gin.Context) {
 
 // UpdatePost 更新文章
 func (p *PostHandler) UpdatePost(c *gin.Context) {
-	var post *models.Post
+	var postReq models.Post
+	var postResp *models.Post
 	var err error
-	if err = c.ShouldBindJSON(&post); err != nil {
+	if err = c.ShouldBindJSON(&postReq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	post, err = p.postService.UpdatePost(post)
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	userID, _ := c.Get("userID")
+	postResp, err = p.postService.UpdatePost(&postReq, uint(id), userID)
 	if err != nil {
 		status := http.StatusInternalServerError
 		if err.Error() == "notfound" {
@@ -66,18 +71,14 @@ func (p *PostHandler) UpdatePost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &post)
+	c.JSON(http.StatusOK, postResp)
 }
 
 // DeletePost 删除文章
 func (p *PostHandler) DeletePost(c *gin.Context) {
-	var post *models.Post
-	var err error
-	if err = c.ShouldBindJSON(&post); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	if err = p.postService.DeletePost(post); err != nil {
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 32)
+	userID, _ := c.Get("userID")
+	if err := p.postService.DeletePost(uint(id), userID); err != nil {
 		status := http.StatusInternalServerError
 		if err.Error() == "notfound" {
 			status = http.StatusNotFound
@@ -91,38 +92,24 @@ func (p *PostHandler) DeletePost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "删除文章成功！"})
 }
 
-// getUserAllPost 获取某用户所有的文章
-func (p *PostHandler) getUserAllPost(c *gin.Context) {
-	var postReq *models.Post
-	var posts *[]models.Post
-	var err error
-
-	if err = c.ShouldBindJSON(&postReq); err != nil {
+// GetUserAllPost 获取某用户所有的文章
+func (p *PostHandler) GetUserAllPost(c *gin.Context) {
+	userID, _ := c.Get("userID")
+	posts, err := p.postService.GetUserAllPost(userID)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	if posts, err = p.postService.GetUserAllPost(postReq.UserID); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, &posts)
+	c.JSON(http.StatusOK, posts)
 }
 
-// getUserPostInfo 获取某篇文章的信息
-func (p *PostHandler) getUserPostInfo(c *gin.Context) {
-	var postReq *models.Post
-	var post *models.Post
-	var err error
-
-	if err = c.ShouldBindJSON(&postReq); err != nil {
+// GetUserPostInfo 获取某篇文章的信息
+func (p *PostHandler) GetUserPostInfo(c *gin.Context) {
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 32)
+	post, err := p.postService.GetUserPostInfo(uint(id))
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	if post, err = p.postService.GetUserPostInfo(postReq.ID); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, &post)
+	c.JSON(http.StatusOK, post)
 }
