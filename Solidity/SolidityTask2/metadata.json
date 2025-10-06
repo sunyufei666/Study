@@ -1,0 +1,11 @@
+{
+    "name": "DOG",
+    "description": "这是一个NFT的图片",
+    "image": "ipfs://bafkreidekfqmsv6ylgraa2fgjbow4zhmpis24didco4p4whyxw2hkv7754",
+    "attributes": [
+        {
+            "trait_type": "创作者",
+            "value": "Ynfe"
+        }
+    ]
+}
