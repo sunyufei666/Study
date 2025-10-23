@@ -8,6 +8,9 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 
+import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
+import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
+
 contract NftAuction is Initializable {
 
     struct Auction {
@@ -33,14 +36,49 @@ contract NftAuction is Initializable {
 
     mapping(address => AggregatorV3Interface) public priceFeeds; // 代币价格预言机地址映射
 
-    function initialize() public initializer {
+    IRouterClient public ccipRouter;
+
+    mapping(uint256 => address) public supportedChains;
+
+    function initialize(address router) public initializer {
         admin = msg.sender;
+        ccipRouter = IRouterClient(router);
+    }
+
+    // 添加跨链
+    function addSupportedChain(uint256 chainId, address router) external {
+        require(msg.sender == admin, "Only admin can add supported chain");
+        supportedChains[chainId] = router;
+    }
+
+    // 处理ERC20跨链出价（由CCIP调用）
+    function receiveCrossChainBid(address bidder, uint256 amount, uint64 sourceChain, address tokenAddress) external {
+        // 简单验证：只允许CCIP路由器调用
+        require(msg.sender == address(ccipRouter), "Not CCIP router");
+        require(supportedChains[sourceChain] != address(0), "Chain not supported");
+        // 判断拍卖是否结束
+        require(!auction.ended && block.timestamp < auction.startTime + auction.duration, "Auction has ended");
+        // 判断出价是否高于当前最高价
+        uint payValue;
+        if (tokenAddress != address(0)) {
+            // 计算ERC20代币出价
+            payValue = amount * uint(getChainlinkDataFeedLatestPrice(tokenAddress));
+            require(payValue > auction.highestBid * uint(getChainlinkDataFeedLatestPrice(auction.nftAddress)) 
+                && payValue >= auction.startPrice * uint(getChainlinkDataFeedLatestPrice(auction.nftAddress)), "Bid amount is too low");
+            // 处理ERC20代币出价
+            IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
+            // 退回之前的出价
+            IERC20(tokenAddress).transfer(auction.highestBidder, auction.highestBid);
+
+            auction.tokenAddress = tokenAddress;
+            auction.highestBidder = bidder;
+            auction.highestBid = amount;
+        }
     }
 
     function setPriceFeed(address tokenAddress, address feedAddress) external {
         require(msg.sender == admin, "Only admin can set price feed");
         priceFeeds[tokenAddress] = AggregatorV3Interface(feedAddress);
-
     }
 
     function getChainlinkDataFeedLatestPrice(address tokenAddress) public view returns (int256) {
