@@ -25,7 +25,7 @@ contract NftAuctionV2 is Initializable {
         address tokenAddress; // 出价所用的代币地址，address(0)表示ETH
     }
 
-    mapping(uint256 => Auction) public auctions; // 拍卖信息
+    Auction public auction; // 拍卖信息
 
     uint256 public nextAuctionId; // 下一个拍卖ID
 
@@ -53,12 +53,12 @@ contract NftAuctionV2 is Initializable {
     function createAuction(uint256 startPrice, uint256 duration, address nftAddress, uint256 tokenId) public {
         require(startPrice > 0, "Start price must be greater than 0");
         require(duration > 0, "Duration must be greater than 0");
-        require(auctions[nextAuctionId].seller == address(0), "Auction already exists for this NFT");
+        require(auction.seller == address(0), "Auction already exists for this NFT");
 
         // 将NFT授权给合约进行拍卖
         IERC721(nftAddress).approve(address(this), tokenId);
 
-        auctions[nextAuctionId] = Auction({
+        auction = Auction({
             seller: msg.sender,
             startPrice: startPrice,
             highestBidder: address(0),
@@ -74,8 +74,7 @@ contract NftAuctionV2 is Initializable {
     }
 
     // 买家参与买单
-    function placeBid(uint256 auctionId, uint256 amount, address tokenAddress) external payable {
-        Auction storage auction = auctions[auctionId];
+    function placeBid(uint256 amount, address tokenAddress) external payable {
         // 判断拍卖是否结束
         require(!auction.ended && block.timestamp < auction.startTime + auction.duration, "Auction has ended");
         // 判断出价是否高于当前最高价
@@ -108,8 +107,7 @@ contract NftAuctionV2 is Initializable {
     }
 
     // 结束拍卖
-    function endAuction(uint256 auctionId) external {
-        Auction storage auction = auctions[auctionId];
+    function endAuction() external {
         require(!auction.ended && block.timestamp >= auction.startTime + auction.duration, "Auction duration has not yet passed or already ended");
         // 将NFT转移给最高出价者
         IERC721(auction.nftAddress).transferFrom(address(this), auction.highestBidder, auction.tokenId);
