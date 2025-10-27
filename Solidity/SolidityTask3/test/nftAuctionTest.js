@@ -39,7 +39,7 @@ async function main() {
         tokenId
     );
 
-    const auction = await nftAuction.auctions(0);
+    const auction = await nftAuction.auction;
     console.log("创建拍卖成功：", auction);
 
     // 3. 购买者参与拍卖
@@ -50,7 +50,7 @@ async function main() {
     await nftAuction.connect(signer).endAuction(0);
 
     // 验证结果
-    const auctionResult = await nftAuction.auctions(0);
+    const auctionResult = await nftAuction.auction;
     console.log("结束拍卖后读取拍卖成功: ", auctionResult);
     expect(auctionResult.highestBidder).to.equal(buyer.address);
     expect(auctionResult.highestBid).to.equal(ethers.parseEther("0.01"));
