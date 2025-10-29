@@ -1,0 +1,17 @@
+{
+  "address": "0xEa02940d5c4B46863920414990480322701A96Ec",
+  "abi": [
+    "error InvalidInitialization()",
+    "error NotInitializing()",
+    "event Initialized(uint64)",
+    "function admin() view returns (address)",
+    "function allAuctions(uint256) view returns (address)",
+    "function allAuctionsLength() view returns (uint256)",
+    "function createAuction() returns (address)",
+    "function initialize()",
+    "function predictAuctionAddress(address,uint256) view returns (address)",
+    "function userAuctions(address,uint256) view returns (address)",
+    "function userAuctionsLength(address) view returns (uint256)"
+  ],
+  "numDeployments": 1
+}

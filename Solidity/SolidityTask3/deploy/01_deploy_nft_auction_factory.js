@@ -9,7 +9,7 @@ module.exports = async ({deployments, getNamedAccounts}) => {
 
     const nftAuctionFactory = await ethers.getContractFactory("NftAuctionFactory");
     const nftAuctionProxy = await upgrades.deployProxy(nftAuctionFactory, [], {initializer: 'initialize'});
-    await nftAuctionProxy.waitForDeploymnent();
+    await nftAuctionProxy.waitForDeployment();
 
     const proxyAddress = await nftAuctionProxy.getAddress();
     console.log("代理合约地址：", proxyAddress);
