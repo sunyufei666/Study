@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/cs-frontend/cs-frontend-chat-service/cs-frontend-chat-service.iml" filepath="$PROJECT_DIR$/cs-frontend/cs-frontend-chat-service/cs-frontend-chat-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cs-frontend/cs-frontend-ticket-service/cs-frontend-ticket-service.iml" filepath="$PROJECT_DIR$/cs-frontend/cs-frontend-ticket-service/cs-frontend-ticket-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cs-infrastructure/cs-infrastructure-utility/cs-infrastructure-utility.iml" filepath="$PROJECT_DIR$/cs-infrastructure/cs-infrastructure-utility/cs-infrastructure-utility.iml" />
+    </modules>
+  </component>
+</project>
