@@ -73,6 +73,25 @@ sendfile：优点大块文件传输效率高；缺点小块文件效率较低、
 
 mmap+write：优点使用小块文件传输时效率高；缺点：比sendfile多消耗CPU、内存安全控制复杂
 
+**RocketMQ中的应用**
+
+**存储层：**
+
+- 所有消息顺序写入 **CommitLog**，每个文件默认 1GB；
+- CommitLog、ConsumeQueue 都通过 `MappedByteBuffer` 映射到虚拟内存；
+- Broker 写入消息时，直接写映射内存，即写 PageCache，由 OS 异步刷盘；
+- 消费者拉取消息时，Broker 从映射内存读取，避免传统 `read` 的内核→用户拷贝。
+
+Rocket的写入和读取都不经过用户缓冲区，减少了一次CPU拷贝。
+
+**网络层：**
+
+- 从 CommitLog 映射内存中定位消息；
+- 通过 Netty 发送；
+- 部分场景使用 `FileRegion` / `transferTo`，底层可能走 `sendfile`，进一步减少拷贝。
+
+Kafka 消费时大量使用 `sendfile`，所以在大吞吐日志场景更有优势；RocketMQ 用 mmap 兼顾写入和读取，更适合业务消息。
+
 ## 持久化架构
 
 CommitLog：存储消息的元数据、消息顺序写入
