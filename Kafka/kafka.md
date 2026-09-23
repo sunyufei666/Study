@@ -186,9 +186,55 @@ N个Broker中至少有1个存活，只要这个条件成立，Kafka就能保证�
 
 
 
+# Kafka管理和监控
+
+## 管理
+
+![image-20260923183043318](./images/image-20260923183043318.png)
+
+![image-20260923183127225](./images/image-20260923183127225.png)
 
 
 
+![image-20260923183157603](./images/image-20260923183157603.png)
+
+
+
+**KafkaAdminClient**
+
+![image-20260923183248656](./images/image-20260923183248656.png)
+
+![image-20260923183417852](./images/image-20260923183417852.png)
+
+
+
+## 监控
+
+服务器监控：机器负载、CPU使用率、内存使用率、磁盘I/O使用率、网络I/O使用率、TCP连接数、打开文件数
+
+JVM监控：Full GC发生频率和时长；活跃对象大小用于调优JVM各个代地堆大小；应用线程总数用于了解Broker进程对CPU的使用情况
+
+集群监控：查看Broker进程是否启动，端口是否建立；查看Broker端关键日志，重点关注server.log；查看Broker端关键线程的运行状态，Log Compaction线程和ReplicaFetcherThread线程。
+
+## **调优**
+
+JVM：合理设置内存大小；选择G1垃圾回收器
+
+Kafka：设置Broker端参数值以匹配生产环境
+
+应用程序：保持客户端版本和Broker端版本一致；不要频繁地创建Producer和Consumer对象实例，用完及时关闭；合理利用多线程来改善性能
+
+### **提升吞吐量**
+
+![image-20260923184046367](./images/image-20260923184046367.png)
+
+### 降低延迟时间
+
+![image-20260923184130786](./images/image-20260923184130786.png)
+
+# 思维导图
+
+![image-20260923184203944](./images/image-20260923184203944.png)
 
 
 
